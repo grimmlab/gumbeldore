@@ -1,6 +1,6 @@
 # Gumbeldore: Self-Improvement for Neural Combinatorial Optimization
 
-This is the official repository for the paper [Self-Improvement for Neural Combinatorial Optimization: Sample Without Replacement, but Improvement](https://arxiv.org/abs/2403.15180),
+This is the official repository for the TMLR paper [Self-Improvement for Neural Combinatorial Optimization: Sample Without Replacement, but Improvement](https://openreview.net/forum?id=agT8ojoH0X),
 using PyTorch. Parallelization is done with [ray.io](https://ray.io).
 
 ![graphical abstract](graphical_abstract.png)
@@ -23,6 +23,10 @@ beams_with_batch_sizes = {
     1: 64  # Beam width 1 (= greedy) with a batch size of 64 per worker.
 }
 ```
+
+## A note on how to start
+
+When using our method, we would advise to start with the sampling method "wor" (see section **Gumbeldore config** below). Here, solutions to a problem instance are sampled in multiple rounds without replacement, but _without_ the advantage-based trie update derived in the paper. In the paper we show that this method alone gives very good results. So you can see how far you can get with this method alone, and then switch to "gumbeldore" and start tuning the step size that controls the advantage-based update. So, using sampling without replacement as a baseline is always a good idea.
 
 ## Overview
 
