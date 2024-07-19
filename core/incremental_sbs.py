@@ -289,6 +289,10 @@ class IncrementalSBS:
         leaves_batch: List[List[sbs.BeamLeaf]] = [[] for _ in range(len(self.root_nodes))]
 
         for round_idx in range(num_rounds):
+            # Check for each root node if its exhausted. If so, we won't search it again
+            unexhausted_root_idcs = [i for i, exhausted in enumerate(self.root_nodes_exhausted) if not exhausted]
+            root_nodes_to_search = [self.root_nodes[i] for i in unexhausted_root_idcs]
+
             is_deterministic_round = True if perform_first_round_deterministic and round_idx == 0 else False
 
             top_p_round = 1. if num_rounds == 1 else (1 - round_idx / (num_rounds - 1.)) * min_nucleus_top_p + 1. * (round_idx / (num_rounds - 1.))
@@ -298,14 +302,15 @@ class IncrementalSBS:
                     normalize_advantage_by_visit_count
                 ),
                 child_transition_fn=self.wrap_child_transition_fn(self.child_transition_fn, self.memory_aggressive),
-                root_states=self.root_nodes,
+                root_states=root_nodes_to_search,
                 beam_width=beam_width,
                 deterministic=is_deterministic_round,
                 top_p=1 if is_deterministic_round else top_p_round
             )
 
             # Update probabilities and remove _TrieNode parts of the leaves.
-            for batch_idx, beam_leaves in enumerate(round_beam_leaves_batch):
+            for j, beam_leaves in enumerate(round_beam_leaves_batch):
+                batch_idx = unexhausted_root_idcs[j]
                 # The first thing we do is that we compute the expected value of the outcome over the current policy
                 if not is_deterministic_round and log_prob_update_type == "gumbeldore":
                     expected_outcome, outcomes, normalized_advantages = self.compute_expected_outcome(
