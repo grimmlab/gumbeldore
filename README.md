@@ -9,7 +9,7 @@ using PyTorch. Parallelization is done with [ray.io](https://ray.io).
 
 ## Reproduce results
 
-To provide a low-entry barrier, we assembled a reproduction script that loads the model checkpoints for TSP, CVRP, and JSSP and reproduces the greedy results reported in the paper. Run with
+To provide a low barrier to get started, we assembled a reproduction script that loads the model checkpoints for TSP, CVRP, and JSSP and reproduces the greedy results reported in the paper. Run with
 
 ```
 $ python reproduce.py
