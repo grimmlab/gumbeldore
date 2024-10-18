@@ -1,5 +1,6 @@
 import os
 os.environ["RAY_DEDUP_LOGS"] = "0"
+os.environ["RAY_EXPERIMENTAL_NOSET_CUDA_VISIBLE_DEVICES"] = "1"
 import torch
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import LambdaLR
