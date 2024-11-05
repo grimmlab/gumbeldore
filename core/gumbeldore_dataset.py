@@ -120,13 +120,18 @@ class GumbeldoreDataset:
         ]
 
         with tqdm(total=len(problem_instances)) as progress_bar:
-            while None in results:
-                time.sleep(0.001)
+            while True:
+                # Check if all workers are done. If so, break after this iteration
+                do_break = len(ray.wait(future_tasks, num_returns=len(future_tasks), timeout=0.5)[1]) == 0
+
                 fetched_results = ray.get(job_pool.fetch_results.remote())
                 for (i, result) in fetched_results:
                     results[i] = result
                 if len(fetched_results):
                     progress_bar.update(len(fetched_results))
+
+                if do_break:
+                    break
 
         ray.get(future_tasks)
         del job_pool
@@ -225,7 +230,7 @@ def async_sbs_worker(config: Config, job_pool: JobPool, network_weights: dict,
                 result = beam_leaves_to_result_fn([x.state for x in beam_leaves_batch[j]])
                 results_to_push.append((result_idx, result))
 
-            job_pool.push_results.remote(results_to_push)
+            ray.get(job_pool.push_results.remote(results_to_push))
 
             if device != "cpu":
                 torch.cuda.empty_cache()

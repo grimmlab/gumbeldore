@@ -87,6 +87,9 @@ See README in directory `./data`.
 
 ### Un-silencing GumbeldoreDataset
 
+**UPDATE: This behavior should be fixed now, i.e., errors in workers are shown while the progress bar still works. Please 
+open an issue if something doesn't work as you think it should.**
+
 When generating data in an epoch with `core.GumbeldoreDataset`, we use tqdm to track the progress with a visual progress bar while collecting the data from parallel workers. However, as `ray.get` is called on the workers after all data has been collected, the program will stall without throwing an error if an error occurs in one of the workers. If you think you are experiencing that, place a `ray.get` after the future tasks have been created and before tqdm in `core/gumbeldore_dataset.py` as follows:
 
 ```
