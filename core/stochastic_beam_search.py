@@ -62,7 +62,7 @@ def top_p_filtering(log_probs: np.array, top_p: float):
     sorted_indices_to_remove[..., 0] = 0
 
     indices_to_remove = sorted_log_probs_indices[sorted_indices_to_remove]
-    log_probs[indices_to_remove] = np.NINF
+    log_probs[indices_to_remove] = -np.inf
     return log_probs
 
 
@@ -155,7 +155,7 @@ def stochastic_beam_search(
                         child_log_probs = np.log(softmax(child_log_probs))
                 log_probabilities = child_log_probs + node_log_prob
                 # Get only feasible actions
-                good_indices = np.where(log_probabilities != np.NINF)[0]
+                good_indices = np.where(log_probabilities != -np.inf)[0]
                 log_probabilities = log_probabilities[good_indices]
                 if deterministic:
                     gumbels = log_probabilities

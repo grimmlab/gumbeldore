@@ -157,7 +157,7 @@ class _TrieNode(object):
         if not self.parent:  # is the root.
             return
         if self.exhausted():
-            new_log_mass = np.NINF  # explicitly set the node's log_mass to -inf to prevent sampling from it again.
+            new_log_mass = -np.inf  # explicitly set the node's log_mass to -inf to prevent sampling from it again.
         else:
             new_log_mass = log_subtract(self.parent.unsampled_log_masses[self.index_in_parent], log_mass)
         self.parent.unsampled_log_masses[self.index_in_parent] = new_log_mass
